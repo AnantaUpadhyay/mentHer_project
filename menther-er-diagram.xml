@@ -1,0 +1,162 @@
+<mxfile host="app.diagrams.net" modified="2026-03-11T18:00:00.000Z" agent="Claude" version="20.8.1" etag="abc123">
+  <diagram name="mentHer ER Diagram" id="diagram1">
+    <mxGraphModel dx="1200" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1600" background="ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- USERS Table -->
+        <mxCell id="users" value="USERS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="500" y="50" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="users_content" value="id (PK)&#10;email (UNIQUE)&#10;password&#10;name&#10;role (entrepreneur/mentor/admin)&#10;phone&#10;profile_picture_url&#10;is_active&#10;created_at&#10;updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="500" y="90" width="200" height="140" as="geometry" />
+        </mxCell>
+        
+        <!-- ENTREPRENEURS Table -->
+        <mxCell id="entrepreneurs" value="ENTREPRENEURS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="entrepreneurs_content" value="id (PK)&#10;user_id (FK)&#10;idea_title&#10;idea_description&#10;industry&#10;business_stage&#10;target_market&#10;funding_needed&#10;skills_looking_for&#10;preferred_mentor_expertise" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="80" y="320" width="200" height="140" as="geometry" />
+        </mxCell>
+        
+        <!-- MENTORS Table -->
+        <mxCell id="mentors" value="MENTORS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="500" y="280" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mentors_content" value="id (PK)&#10;user_id (FK)&#10;bio&#10;years_of_experience&#10;current_position&#10;company&#10;availability_status&#10;max_mentees&#10;current_mentees&#10;hourly_rate&#10;is_verified&#10;rating&#10;total_ratings" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="500" y="320" width="200" height="150" as="geometry" />
+        </mxCell>
+        
+        <!-- ADMINS Table -->
+        <mxCell id="admins" value="ADMINS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="920" y="280" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="admins_content" value="id (PK)&#10;user_id (FK)&#10;permissions (JSON)&#10;last_login&#10;created_at&#10;updated_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="920" y="320" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- MENTOR_EXPERTISE Table -->
+        <mxCell id="mentor_expertise" value="MENTOR_EXPERTISE" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="500" y="550" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mentor_expertise_content" value="id (PK)&#10;mentor_id (FK)&#10;expertise_area&#10;years_in_field&#10;certification_details" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="500" y="590" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- MENTORSHIPS Table -->
+        <mxCell id="mentorships" value="MENTORSHIPS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="290" y="550" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mentorships_content" value="id (PK)&#10;entrepreneur_id (FK)&#10;mentor_id (FK)&#10;status&#10;match_score&#10;start_date&#10;expected_end_date&#10;actual_end_date&#10;notes&#10;created_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="290" y="590" width="200" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- MESSAGES Table -->
+        <mxCell id="messages" value="MESSAGES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="710" y="550" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="messages_content" value="id (PK)&#10;sender_id (FK)&#10;receiver_id (FK)&#10;mentorship_id (FK)&#10;content&#10;message_type&#10;attachment_url&#10;created_at&#10;read_at&#10;is_archived" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="710" y="590" width="200" height="130" as="geometry" />
+        </mxCell>
+        
+        <!-- MENTORSHIPS_RATING Table -->
+        <mxCell id="mentorships_rating" value="MENTORSHIPS_RATING" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="290" y="800" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="mentorships_rating_content" value="id (PK)&#10;mentorship_id (FK)&#10;rating&#10;feedback&#10;rated_by (FK)&#10;created_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="290" y="840" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- GOVERNMENT_SCHEMES Table -->
+        <mxCell id="gov_schemes" value="GOVERNMENT_SCHEMES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="80" y="800" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="gov_schemes_content" value="id (PK)&#10;scheme_name&#10;description&#10;eligibility_criteria&#10;loan_amount_min/max&#10;interest_rate&#10;state&#10;ministry&#10;official_website&#10;status" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="80" y="840" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- FUNDING_SCHEMES Table -->
+        <mxCell id="funding_schemes" value="FUNDING_SCHEMES" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="500" y="800" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="funding_schemes_content" value="id (PK)&#10;scheme_name&#10;provider&#10;funding_type&#10;min_funding / max_funding&#10;eligibility_criteria&#10;application_deadline&#10;interest_rate&#10;status" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="500" y="840" width="200" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- NOTIFICATIONS Table -->
+        <mxCell id="notifications" value="NOTIFICATIONS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;strokeWidth=2;fontSize=14;fontStyle=bold" vertex="1" parent="1">
+          <mxGeometry x="920" y="550" width="200" height="40" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="notifications_content" value="id (PK)&#10;user_id (FK)&#10;type&#10;title&#10;content&#10;related_id&#10;is_read&#10;created_at" style="text;html=1;align=left;verticalAlign=top;whiteSpace=wrap;fontSize=11;fontFamily=monospace" vertex="1" parent="1">
+          <mxGeometry x="920" y="590" width="200" height="110" as="geometry" />
+        </mxCell>
+        
+        <!-- RELATIONSHIPS / FOREIGN KEYS -->
+        
+        <!-- Users to Entrepreneurs -->
+        <mxCell id="edge1" value="1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="users" target="entrepreneurs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Users to Mentors -->
+        <mxCell id="edge2" value="1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="users" target="mentors">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Users to Admins -->
+        <mxCell id="edge3" value="1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="users" target="admins">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Mentors to Mentor_Expertise -->
+        <mxCell id="edge4" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="mentors" target="mentor_expertise">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Entrepreneurs to Mentorships -->
+        <mxCell id="edge5" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="entrepreneurs" target="mentorships">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Mentors to Mentorships -->
+        <mxCell id="edge6" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="mentors" target="mentorships">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Mentorships to Mentorships_Rating -->
+        <mxCell id="edge7" value="1..1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="mentorships" target="mentorships_rating">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Users to Messages (sender) -->
+        <mxCell id="edge8" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="users" target="messages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Mentorships to Messages -->
+        <mxCell id="edge9" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="mentorships" target="messages">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- Users to Notifications -->
+        <mxCell id="edge10" value="1..*" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=11;endArrow=ERmandOne;startArrow=ERone" edge="1" parent="1" source="users" target="notifications">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
