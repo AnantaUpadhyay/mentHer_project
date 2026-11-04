@@ -1,51 +1,31 @@
-// src/context/AuthContext.js
-import React, { createContext, useState, useEffect } from 'react';
-
+import React, { createContext, useEffect, useState } from "react";
+import api from "../services/api";
 export const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null),
+    [loading, setLoading] = useState(true);
   useEffect(() => {
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('user');
-    
-    if (token && userData) {
-      try {
-        setUser(JSON.parse(userData));
-      } catch (e) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-      }
-    }
-    setLoading(false);
+    api
+      .get("/auth/me")
+      .then(({ data }) => setUser(data.user))
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
   }, []);
-
-  const login = (userData, token) => {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('user', JSON.stringify(userData));
-    setUser(userData);
-    setError(null);
-  };
-
-  const logout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+  useEffect(() => {
+    const expire = () => setUser(null);
+    window.addEventListener("menther:session-expired", expire);
+    return () => window.removeEventListener("menther:session-expired", expire);
+  }, []);
+  const login = (user) => setUser(user);
+  const logout = async () => {
+    await api.post("/auth/logout");
     setUser(null);
   };
-
-  const value = {
-    user,
-    setUser,
-    login,
-    logout,
-    loading,
-    error,
-    setError,
-    isAuthenticated: !!user,
-  };
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-};
+  return (
+    <AuthContext.Provider
+      value={{ user, setUser, login, logout, loading, isAuthenticated: !!user }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}

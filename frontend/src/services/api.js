@@ -1,32 +1,19 @@
-// src/services/api.js
-// src/services/api.js
-import axios from 'axios';
-
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
-
+import axios from "axios";
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: "/api",
   timeout: 10000,
+  withCredentials: true,
 });
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    if (
+      error.response?.status === 401 &&
+      !error.config?.url?.startsWith("/auth/")
+    ) {
+      window.dispatchEvent(new Event("menther:session-expired"));
     }
     return Promise.reject(error);
-  }
+  },
 );
-
 export default api;
