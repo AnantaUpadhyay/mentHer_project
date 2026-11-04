@@ -1,0 +1,6 @@
+PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL;
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('entrepreneur','mentor')), bio TEXT DEFAULT '', company TEXT DEFAULT '', industry TEXT DEFAULT '', stage TEXT DEFAULT 'Idea', location TEXT DEFAULT '', expertise TEXT DEFAULT '', goal TEXT DEFAULT '');
+CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id),expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS requests(id INTEGER PRIMARY KEY,entrepreneur_id INTEGER REFERENCES users(id),mentor_id INTEGER REFERENCES users(id),note TEXT NOT NULL,status TEXT DEFAULT 'pending' CHECK(status IN ('pending','accepted','declined')),created_at TEXT DEFAULT CURRENT_TIMESTAMP,UNIQUE(entrepreneur_id,mentor_id));
+CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY,request_id INTEGER REFERENCES requests(id),sender_id INTEGER REFERENCES users(id),body TEXT NOT NULL,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS saved(user_id INTEGER REFERENCES users(id),resource_id TEXT,PRIMARY KEY(user_id,resource_id));

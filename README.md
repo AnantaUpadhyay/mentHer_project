@@ -45,8 +45,16 @@ No admin credentials, verification badges, scheduling, video calls, payments, pu
 
 See [design and product audit](docs/PRODUCT_AUDIT.md) for findings, decisions and next steps.
 
-## Vercel public preview
+## Vercel and Neon
 
-`vercel.json` deploys the React build and a public API for government schemes. The production build sets `REACT_APP_PUBLIC_PREVIEW=true`, which hides account forms and explains that member access is coming soon. The public API explicitly rejects account writes. Local development retains the complete SQLite-backed mentorship app.
+Production runs the full API through `api/index.js` and persists accounts, profiles, mentorship requests, messages and bookmarks in Neon Postgres. Vercel supplies `DATABASE_URL`; `APP_ORIGIN` must match the production website for authenticated writes. Cookies use Secure, HttpOnly and SameSite=Lax in production. Local development continues to use SQLite unless `DATABASE_URL` is set.
 
-Before enabling hosted member access, connect persistent hosted database storage and deploy the full authenticated backend. Vercel Functions do not use the local SQLite database. The public preview does not upload local accounts or messages.
+After connecting Neon and pulling environment variables with Vercel CLI:
+
+```sh
+npm ci --prefix backend
+node --env-file=.env.local backend/migrate.js
+node --env-file=.env.local backend/test-neon.js
+```
+
+The migration creates missing tables without deleting existing records. The Neon integration test creates uniquely prefixed tables, exercises the real API against Postgres, and removes only those test tables afterward. Do not commit `.env.local`, database credentials, or local SQLite files. Production schema changes run explicitly before deployment, not inside user requests.

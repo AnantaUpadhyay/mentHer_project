@@ -1,5 +1,5 @@
 import http from "node:http";
-import { DatabaseSync } from "node:sqlite";
+import { getDatabase } from "./database.js";
 import {
   randomBytes,
   scrypt as scryptCallback,
@@ -7,18 +7,8 @@ import {
   createHash,
 } from "node:crypto";
 import { promisify } from "node:util";
-import { mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 const scrypt = promisify(scryptCallback);
-const dataDir = fileURLToPath(new URL("./data/", import.meta.url));
-mkdirSync(dataDir, { recursive: true });
-const db = new DatabaseSync(process.env.DB_PATH || `${dataDir}menther.sqlite`);
-db.exec(`PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL;
-CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('entrepreneur','mentor')), bio TEXT DEFAULT '', company TEXT DEFAULT '', industry TEXT DEFAULT '', stage TEXT DEFAULT 'Idea', location TEXT DEFAULT '', expertise TEXT DEFAULT '', goal TEXT DEFAULT '');
-CREATE TABLE IF NOT EXISTS sessions(token TEXT PRIMARY KEY,user_id INTEGER REFERENCES users(id),expires INTEGER NOT NULL);
-CREATE TABLE IF NOT EXISTS requests(id INTEGER PRIMARY KEY,entrepreneur_id INTEGER REFERENCES users(id),mentor_id INTEGER REFERENCES users(id),note TEXT NOT NULL,status TEXT DEFAULT 'pending' CHECK(status IN ('pending','accepted','declined')),created_at TEXT DEFAULT CURRENT_TIMESTAMP,UNIQUE(entrepreneur_id,mentor_id));
-CREATE TABLE IF NOT EXISTS messages(id INTEGER PRIMARY KEY,request_id INTEGER REFERENCES requests(id),sender_id INTEGER REFERENCES users(id),body TEXT NOT NULL,created_at TEXT DEFAULT CURRENT_TIMESTAMP);
-CREATE TABLE IF NOT EXISTS saved(user_id INTEGER REFERENCES users(id),resource_id TEXT,PRIMARY KEY(user_id,resource_id));`);
 const publicUser = (row) => {
   if (!row) return null;
   const { password, ...user } = row;
@@ -29,7 +19,9 @@ import { resources } from "./resources.js";
 const attempts = new Map();
 const origin = process.env.APP_ORIGIN || "http://localhost:3001";
 function fail(status, message) {
-  throw Object.assign(new Error(message), { status });
+  throw Object.assign(new Error(message), {
+    status,
+  });
 }
 function field(body, key, max = 200, required = false) {
   const value = body[key];
@@ -43,6 +35,25 @@ function field(body, key, max = 200, required = false) {
   return value.trim();
 }
 async function bodyOf(req) {
+  if (req.body !== undefined) {
+    let body = req.body;
+    if (
+      Buffer.byteLength(
+        typeof body === "string" ? body : JSON.stringify(body),
+      ) > 16000
+    )
+      fail(413, "Request is too large.");
+    if (typeof body === "string") {
+      try {
+        body = JSON.parse(body);
+      } catch {
+        fail(400, "Invalid JSON object.");
+      }
+    }
+    if (!body || typeof body !== "object" || Array.isArray(body))
+      fail(400, "Invalid JSON object.");
+    return body;
+  }
   let data = "";
   for await (const chunk of req) {
     data += chunk;
@@ -62,7 +73,7 @@ const safeId = (value) => {
   if (!Number.isSafeInteger(id) || id < 1) fail(400, "Invalid ID.");
   return id;
 };
-export const server = http.createServer(async (req, res) => {
+export async function handler(req, res) {
   const send = (status, value) => {
     res.writeHead(status, {
       "Content-Type": "application/json",
@@ -88,20 +99,32 @@ export const server = http.createServer(async (req, res) => {
     )
       fail(403, "This request origin is not allowed.");
     if (path === "/schemes" && method === "GET")
-      return send(200, { schemes: resources.filter((r) => r.eligibility) });
-    if (path === "/health") return send(200, { ok: true });
+      return send(200, {
+        schemes: resources.filter((r) => r.eligibility),
+      });
+    if (path === "/health")
+      return send(200, {
+        ok: true,
+        storage: process.env.DATABASE_URL ? "neon" : "sqlite",
+      });
+    const db = await getDatabase();
     if (
       (path === "/auth/signup" || path === "/auth/login") &&
       method === "POST"
     ) {
-      const ip = req.socket.remoteAddress;
+      const ip = process.env.VERCEL
+        ? req.headers["x-vercel-forwarded-for"] || req.socket.remoteAddress
+        : req.socket.remoteAddress;
       const now = Date.now();
       if (attempts.size > 1000)
         for (const [key, value] of attempts)
           if (now - value.start > 900000) attempts.delete(key);
       let limit = attempts.get(ip);
       if (!limit || now - limit.start > 900000) {
-        limit = { start: now, count: 0 };
+        limit = {
+          start: now,
+          count: 0,
+        };
         attempts.set(ip, limit);
       }
       if (++limit.count > 40)
@@ -126,21 +149,21 @@ export const server = http.createServer(async (req, res) => {
         const salt = randomBytes(16).toString("hex");
         const key = await scrypt(password, salt, 64);
         try {
-          const result = db
+          const result = await db
             .prepare(
               "INSERT INTO users(name,email,password,role) VALUES(?,?,?,?)",
             )
             .run(name, email, `${salt}:${key.toString("hex")}`, role);
-          user = db
+          user = await db
             .prepare("SELECT * FROM users WHERE id=?")
             .get(result.lastInsertRowid);
         } catch (error) {
-          if (error.errcode === 2067)
+          if (error.errcode === 2067 || error.code === "23505")
             fail(409, "An account with this email already exists.");
           throw error;
         }
       } else {
-        user = db.prepare("SELECT * FROM users WHERE email=?").get(email);
+        user = await db.prepare("SELECT * FROM users WHERE email=?").get(email);
         const [salt, expected] = (
           user?.password || "dummy:".concat("0".repeat(128))
         ).split(":");
@@ -148,25 +171,25 @@ export const server = http.createServer(async (req, res) => {
         if (!user || !timingSafeEqual(Buffer.from(expected, "hex"), actual))
           fail(401, "Email or password is incorrect.");
       }
-      db.prepare("DELETE FROM sessions WHERE expires<?").run(Date.now());
+      await db.prepare("DELETE FROM sessions WHERE expires<?").run(Date.now());
       const token = randomBytes(32).toString("hex");
-      db.prepare("INSERT INTO sessions VALUES(?,?,?)").run(
-        hashToken(token),
-        user.id,
-        Date.now() + 7 * 86400000,
-      );
+      await db
+        .prepare("INSERT INTO sessions VALUES(?,?,?)")
+        .run(hashToken(token), user.id, Date.now() + 7 * 86400000);
       res.setHeader(
         "Set-Cookie",
         `menther_session=${token}; HttpOnly; SameSite=Lax; Path=/api; Max-Age=604800${process.env.NODE_ENV === "production" ? "; Secure" : ""}`,
       );
-      return send(200, { user: publicUser(user) });
+      return send(200, {
+        user: publicUser(user),
+      });
     }
     const token = (req.headers.cookie || "")
       .split("; ")
       .find((c) => c.startsWith("menther_session="))
       ?.slice(16);
     const user = token
-      ? db
+      ? await db
           .prepare(
             "SELECT users.* FROM users JOIN sessions ON sessions.user_id=users.id WHERE token=? AND expires>?",
           )
@@ -174,14 +197,20 @@ export const server = http.createServer(async (req, res) => {
       : null;
     if (!user) fail(401, "Please sign in to continue.");
     if (path === "/auth/me" && method === "GET")
-      return send(200, { user: publicUser(user) });
+      return send(200, {
+        user: publicUser(user),
+      });
     if (path === "/auth/logout" && method === "POST") {
-      db.prepare("DELETE FROM sessions WHERE token=?").run(hashToken(token));
+      await db
+        .prepare("DELETE FROM sessions WHERE token=?")
+        .run(hashToken(token));
       res.setHeader(
         "Set-Cookie",
         "menther_session=; HttpOnly; SameSite=Lax; Path=/api; Max-Age=0",
       );
-      return send(200, { ok: true });
+      return send(200, {
+        ok: true,
+      });
     }
     if (path === "/profile" && method === "PUT") {
       const body = await bodyOf(req);
@@ -202,18 +231,20 @@ export const server = http.createServer(async (req, res) => {
           key === "name",
         ),
       );
-      db.prepare(
-        "UPDATE users SET name=?,bio=?,company=?,industry=?,stage=?,location=?,expertise=?,goal=? WHERE id=?",
-      ).run(...values, user.id);
+      await db
+        .prepare(
+          "UPDATE users SET name=?,bio=?,company=?,industry=?,stage=?,location=?,expertise=?,goal=? WHERE id=?",
+        )
+        .run(...values, user.id);
       return send(200, {
         user: publicUser(
-          db.prepare("SELECT * FROM users WHERE id=?").get(user.id),
+          await db.prepare("SELECT * FROM users WHERE id=?").get(user.id),
         ),
       });
     }
     if (path === "/mentors" && method === "GET")
       return send(200, {
-        mentors: db
+        mentors: await db
           .prepare(
             "SELECT id,name,bio,industry,location,expertise FROM users WHERE role='mentor' AND bio<>'' AND expertise<>'' ORDER BY id DESC",
           )
@@ -222,26 +253,30 @@ export const server = http.createServer(async (req, res) => {
     if (path === "/resources" && method === "GET")
       return send(200, {
         resources,
-        saved: db
-          .prepare("SELECT resource_id FROM saved WHERE user_id=?")
-          .all(user.id)
-          .map((r) => r.resource_id),
+        saved: (
+          await db
+            .prepare("SELECT resource_id FROM saved WHERE user_id=?")
+            .all(user.id)
+        ).map((r) => r.resource_id),
       });
     if (path.startsWith("/saved/") && ["PUT", "DELETE"].includes(method)) {
       const id = path.split("/")[2];
       if (!resources.some((r) => r.id === id)) fail(404, "Resource not found.");
       if (method === "PUT")
-        db.prepare("INSERT OR IGNORE INTO saved VALUES(?,?)").run(user.id, id);
+        await db
+          .prepare("INSERT OR IGNORE INTO saved VALUES(?,?)")
+          .run(user.id, id);
       else
-        db.prepare("DELETE FROM saved WHERE user_id=? AND resource_id=?").run(
-          user.id,
-          id,
-        );
-      return send(200, { ok: true });
+        await db
+          .prepare("DELETE FROM saved WHERE user_id=? AND resource_id=?")
+          .run(user.id, id);
+      return send(200, {
+        ok: true,
+      });
     }
     if (path === "/requests" && method === "GET")
       return send(200, {
-        requests: db
+        requests: await db
           .prepare(
             `SELECT r.*,e.name AS entrepreneur_name,m.name AS mentor_name,e.company,e.goal FROM requests r JOIN users e ON e.id=r.entrepreneur_id JOIN users m ON m.id=r.mentor_id WHERE r.entrepreneur_id=? OR r.mentor_id=? ORDER BY r.id DESC`,
           )
@@ -254,28 +289,32 @@ export const server = http.createServer(async (req, res) => {
         id = safeId(body.mentor_id),
         note = field(body, "note", 1200, true);
       if (
-        !db
+        !(await db
           .prepare(
             "SELECT id FROM users WHERE id=? AND role='mentor' AND bio<>'' AND expertise<>''",
           )
-          .get(id)
+          .get(id))
       )
         fail(404, "Mentor not found.");
       try {
-        db.prepare(
-          "INSERT INTO requests(entrepreneur_id,mentor_id,note) VALUES(?,?,?)",
-        ).run(user.id, id, note);
+        await db
+          .prepare(
+            "INSERT INTO requests(entrepreneur_id,mentor_id,note) VALUES(?,?,?)",
+          )
+          .run(user.id, id, note);
       } catch (error) {
-        if (error.errcode === 2067)
+        if (error.errcode === 2067 || error.code === "23505")
           fail(409, "You have already sent this mentor a request.");
         throw error;
       }
-      return send(201, { ok: true });
+      return send(201, {
+        ok: true,
+      });
     }
     const match = path.match(/^\/requests\/(\d+)(\/messages)?$/);
     if (match) {
       const id = safeId(match[1]),
-        request = db.prepare("SELECT * FROM requests WHERE id=?").get(id);
+        request = await db.prepare("SELECT * FROM requests WHERE id=?").get(id);
       if (
         !request ||
         ![request.mentor_id, request.entrepreneur_id].includes(user.id)
@@ -290,18 +329,19 @@ export const server = http.createServer(async (req, res) => {
           request.status !== "pending"
         )
           fail(400, "This request cannot be updated.");
-        db.prepare("UPDATE requests SET status=? WHERE id=?").run(
-          body.status,
-          id,
-        );
-        return send(200, { ok: true });
+        await db
+          .prepare("UPDATE requests SET status=? WHERE id=?")
+          .run(body.status, id);
+        return send(200, {
+          ok: true,
+        });
       }
       if (match[2]) {
         if (request.status !== "accepted")
           fail(403, "Messaging opens after the mentor accepts your request.");
         if (method === "GET")
           return send(200, {
-            messages: db
+            messages: await db
               .prepare(
                 "SELECT messages.*,users.name FROM messages JOIN users ON users.id=messages.sender_id WHERE request_id=? ORDER BY messages.id",
               )
@@ -309,23 +349,32 @@ export const server = http.createServer(async (req, res) => {
           });
         if (method === "POST") {
           const body = await bodyOf(req);
-          db.prepare(
-            "INSERT INTO messages(request_id,sender_id,body) VALUES(?,?,?)",
-          ).run(id, user.id, field(body, "body", 3000, true));
-          return send(201, { ok: true });
+          await db
+            .prepare(
+              "INSERT INTO messages(request_id,sender_id,body) VALUES(?,?,?)",
+            )
+            .run(id, user.id, field(body, "body", 3000, true));
+          return send(201, {
+            ok: true,
+          });
         }
       }
     }
     fail(404, "Endpoint not found.");
   } catch (error) {
-    if (!error.status) console.error(error);
+    if (!error.status)
+      console.error("API error", {
+        code: error.code,
+        name: error.name,
+      });
     send(error.status || 500, {
       message: error.status
         ? error.message
         : "Something went wrong. Please try again.",
     });
   }
-});
+}
+export const server = http.createServer(handler);
 if (process.argv[1] === fileURLToPath(import.meta.url))
   server.listen(Number(process.env.PORT || 5000), "127.0.0.1", () =>
     console.log("mentHer API ready on http://localhost:5000"),
