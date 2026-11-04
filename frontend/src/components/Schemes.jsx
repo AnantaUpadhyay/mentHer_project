@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../services/api";
 import { Icon, Notice } from "./UI";
@@ -10,46 +10,65 @@ export function SchemeFacts({ resource }) {
       <dl>
         <dt>Who can explore it</dt>
         <dd>{resource.eligibility}</dd>
+        {resource.availability && (
+          <>
+            <dt>Availability & cost</dt>
+            <dd>{resource.availability}</dd>
+          </>
+        )}
         <dt>How to get started</dt>
         <dd>{resource.application}</dd>
       </dl>
       <p className="scheme-review">
-        Source reviewed 2 November 2026 · Confirm current availability with the
-        provider.
+        Source reviewed {resource.reviewed || "2 November 2026"} · Confirm
+        current availability with the provider.
       </p>
     </div>
   );
 }
-export default function Schemes() {
+export default function Schemes({ international = false }) {
+  const endpoint = international ? "/opportunities" : "/schemes";
   const [schemes, setSchemes] = useState([]),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
     setError("");
     api
-      .get("/schemes")
-      .then(({ data }) => setSchemes(data.schemes))
-      .catch(() => setError("Schemes could not be loaded. Please try again."))
+      .get(endpoint)
+      .then(({ data }) =>
+        setSchemes(data[international ? "opportunities" : "schemes"]),
+      )
+      .catch(() => setError("Resources could not be loaded. Please try again."))
       .finally(() => setLoading(false));
-  };
+  }, [endpoint, international]);
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
   return (
-    <section className="section schemes-section" id="schemes">
+    <section
+      className="section schemes-section"
+      id={international ? "opportunities" : "schemes"}
+    >
       <div className="section-heading">
         <div>
-          <span className="eyebrow">SUPPORT FOR YOUR BUSINESS</span>
+          <span className="eyebrow">
+            {international
+              ? "POSSIBILITIES BEYOND BORDERS"
+              : "SUPPORT FOR YOUR BUSINESS"}
+          </span>
           <h2>
-            Explore the support
+            {international ? "Your next step," : "Explore the support"}
             <br />
-            <em>you could qualify for.</em>
+            <em>
+              {international ? "a wider world." : "you could qualify for."}
+            </em>
           </h2>
         </div>
         <p>
-          Government programmes for women entrepreneurs in India, with official
-          sources to help you take the next step.
+          {international
+            ? "Learning, mentoring, trade networks and awards for women building businesses around the world. Check each programme’s country rules and application status."
+            : "Government programmes for women entrepreneurs in India, with official sources to help you take the next step."}
         </p>
       </div>
       <Notice error>{error}</Notice>
@@ -76,12 +95,13 @@ export default function Schemes() {
         </div>
       )}
       <p className="resource-disclaimer">
-        These summaries are a starting point, not an eligibility decision. Loans
-        require repayment and lender approval. Application windows, training
-        places and terms depend on the provider.
+        {international
+          ? "An international directory, not a list of guaranteed places or open calls. Availability is shown as last reviewed; confirm eligibility, costs and deadlines with each provider."
+          : "These summaries are a starting point, not an eligibility decision. Loans require repayment and lender approval. Application windows, training places and terms depend on the provider."}
       </p>
       <Link className="quiet-link" to="/signup">
-        Create an account to save useful schemes <Icon size={17} />
+        Create an account to save useful{" "}
+        {international ? "opportunities" : "schemes"} <Icon size={17} />
       </Link>
     </section>
   );

@@ -20,7 +20,11 @@ function renderWithContext(component, path = "/", context = {}) {
 }
 test("home explains mentorship, offers clear next steps and opens accessible FAQs", async () => {
   renderWithContext(<HomePage />);
-  await waitFor(() => expect(screen.queryByText("Loading official resources…")).not.toBeInTheDocument());
+  await waitFor(() =>
+    expect(screen.queryAllByText("Loading official resources…")).toHaveLength(
+      0,
+    ),
+  );
   expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
     "Your ambition.",
   );
@@ -78,11 +82,15 @@ beforeEach(() => {
   api.get.mockImplementation((path) =>
     Promise.resolve({
       data:
-        path === "/schemes" ? {schemes:[]} : path === "/mentors"
-          ? { mentors: [] }
-          : path === "/requests"
-            ? { requests: [] }
-            : { resources: [], saved: [] },
+        path === "/schemes"
+          ? { schemes: [] }
+          : path === "/opportunities"
+            ? { opportunities: [] }
+            : path === "/mentors"
+              ? { mentors: [] }
+              : path === "/requests"
+                ? { requests: [] }
+                : { resources: [], saved: [] },
     }),
   );
   window.matchMedia = jest.fn(() => ({
@@ -114,4 +122,46 @@ test("unknown workspace tabs recover to the overview", async () => {
   expect(
     await screen.findByRole("button", { name: "Explore mentors" }),
   ).toBeInTheDocument();
+});
+
+test("global opportunities show availability and keep the India schemes separate", async () => {
+  api.get.mockImplementation((path) =>
+    Promise.resolve({
+      data:
+        path === "/opportunities"
+          ? {
+              opportunities: [
+                {
+                  id: "cartier",
+                  title: "Cartier Women’s Initiative",
+                  org: "Cartier",
+                  description: "Impact business awards",
+                  url: "https://www.cartierwomensinitiative.com/regional-awards",
+                  audience: "Women impact entrepreneurs",
+                  eligibility: "Women-led impact businesses",
+                  application: "Monitor the official next round",
+                  availability: "Applications for the 2027 edition are closed.",
+                  reviewed: "5 November 2026",
+                },
+              ],
+            }
+          : { schemes: [] },
+    }),
+  );
+  renderWithContext(<HomePage />);
+  expect(
+    await screen.findByRole("heading", { name: "Cartier Women’s Initiative" }),
+  ).toBeVisible();
+  expect(
+    screen.getByText("Applications for the 2027 edition are closed."),
+  ).toBeVisible();
+  expect(document.querySelector("#opportunities")).toHaveTextContent(
+    "5 November 2026",
+  );
+  expect(document.querySelector("#schemes")).not.toHaveTextContent(
+    "Cartier Women’s Initiative",
+  );
+  expect(
+    screen.getByRole("link", { name: "Global opportunities" }),
+  ).toHaveAttribute("href", "#opportunities");
 });

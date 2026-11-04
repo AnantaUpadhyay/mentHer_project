@@ -100,7 +100,13 @@ export async function handler(req, res) {
       fail(403, "This request origin is not allowed.");
     if (path === "/schemes" && method === "GET")
       return send(200, {
-        schemes: resources.filter((r) => r.eligibility),
+        schemes: resources.filter((r) => r.type === "Women’s schemes"),
+      });
+    if (path === "/opportunities" && method === "GET")
+      return send(200, {
+        opportunities: resources.filter(
+          (r) => r.type === "Global opportunities",
+        ),
       });
     if (path === "/health")
       return send(200, {

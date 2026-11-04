@@ -84,4 +84,93 @@ export const resources = [
     application:
       "Use the Coir Board’s official course and application forms. Contact the training centre for current batches, stipend terms and places.",
   },
+  {
+    id: "shetrades",
+    type: "Global opportunities",
+    title: "SheTrades — take your business further",
+    org: "International Trade Centre",
+    description:
+      "A global platform for women in business to build trade skills, meet peers and discover market opportunities.",
+    url: "https://www.shetrades.com/",
+    tag: "Global trade · Learning & connections",
+    audience: "International · Women entrepreneurs and producers",
+    eligibility:
+      "Women in business can explore the global platform. Individual projects, trade fairs and finance opportunities have their own country and business requirements.",
+    application:
+      "Create a free account on the official platform, browse the Academy and check the events and opportunities available for your country.",
+    availability: "Free platform registration; project and event windows vary.",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "dreambuilder",
+    type: "Global opportunities",
+    title: "DreamBuilder — build your business skills",
+    org: "Thunderbird School of Global Management · Freeport-McMoRan Foundation",
+    description:
+      "Free, self-paced online training designed around women’s business journeys, from an idea to a business plan.",
+    url: "https://dreambuilder.org/",
+    tag: "Worldwide · Free online learning",
+    audience: "Designed for women · Open to other learners",
+    eligibility:
+      "Aspiring and existing entrepreneurs worldwide. Courses are available in English and Spanish; online participation requires internet access.",
+    application:
+      "Choose your language and register through DreamBuilder to work through the courses at your own pace.",
+    availability:
+      "Self-paced learning; no competitive award or funding application.",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "weconnect",
+    type: "Global opportunities",
+    title: "WEConnect — connect with global buyers",
+    org: "WEConnect International",
+    description:
+      "A business network helping women-owned suppliers gain visibility with corporate buyers. Certification is a separate, paid process.",
+    url: "https://weconnectinternational.org/weconnect-international-certification/",
+    tag: "International markets · Supplier networks",
+    audience: "Women-owned businesses · Country rules apply",
+    eligibility:
+      "Certification requires at least 51% ownership, management and independent control by women, plus availability in your market. US-headquartered businesses follow the provider’s separate WBENC route.",
+    application:
+      "Check your market on the official page. Business registration is free; review fees and document requirements before seeking certification. Participation does not guarantee contracts.",
+    availability:
+      "Free registration; certification fees and country coverage vary.",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "cherie-blair-mentoring",
+    type: "Global opportunities",
+    title: "Mentoring Women in Business",
+    org: "Cherie Blair Foundation for Women",
+    description:
+      "A year of online, cross-border mentoring to help women entrepreneurs strengthen their businesses and work toward their goals.",
+    url: "https://cherieblairfoundation.org/what-we-do/programmes/mentoring/become-a-mentee/",
+    tag: "Online · Business mentoring",
+    audience: "Women entrepreneurs · Low- and middle-income countries",
+    eligibility:
+      "Women entrepreneurs in low- and middle-income countries who meet the programme’s current selection and participation requirements. Places are selected, not guaranteed.",
+    application:
+      "Review the mentee criteria and register interest through the official programme page for a future intake.",
+    availability:
+      "Applications closed when reviewed. Provider plans to reopen in early 2027 for the May 2027 cohort.",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "cartier-womens-initiative",
+    type: "Global opportunities",
+    title: "Cartier Women’s Initiative — Regional Awards",
+    org: "Cartier Women’s Initiative",
+    description:
+      "An international award and fellowship supporting women-led businesses with a positive social or environmental impact.",
+    url: "https://www.cartierwomensinitiative.com/regional-awards",
+    tag: "International · Impact awards & fellowship",
+    audience: "Women impact entrepreneurs · All regions",
+    eligibility:
+      "Women-owned and women-led, for-profit impact businesses. Business age, revenue, funding, ownership and applicant participation criteria apply; read the current application guide.",
+    application:
+      "Read the regional eligibility guide and monitor the official page for the next announced application round. Award selection is competitive.",
+    availability:
+      "Applications for the 2027 edition are closed. No next-round deadline is listed here.",
+    reviewed: "5 November 2026",
+  },
 ];

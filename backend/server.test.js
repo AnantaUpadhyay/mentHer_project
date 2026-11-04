@@ -231,13 +231,44 @@ test("rejects invalid roles, duplicates, invalid credentials and cross-origin wr
   assert.equal(response.status, 403);
 });
 
-test('public schemes provide official sources and eligibility without exposing accounts', async () => {
-  const response = await request('/schemes');
-  assert.equal(response.status,200);
-  assert.equal(response.data.schemes.length,3);
+test("public schemes provide official sources and eligibility without exposing accounts", async () => {
+  const response = await request("/schemes");
+  assert.equal(response.status, 200);
+  assert.equal(response.data.schemes.length, 3);
   for (const scheme of response.data.schemes) {
     assert.ok(scheme.eligibility && scheme.application && scheme.audience);
-    assert.ok(new URL(scheme.url).hostname.endsWith('.gov.in'));
-    assert.equal(scheme.email,undefined);
+    assert.ok(new URL(scheme.url).hostname.endsWith(".gov.in"));
+    assert.equal(scheme.email, undefined);
   }
+});
+
+test("global opportunities are public, distinct from schemes and bookmarkable", async () => {
+  const response = await request("/opportunities");
+  assert.equal(response.status, 200);
+  assert.equal(response.data.opportunities.length, 5);
+  const ids = new Set();
+  for (const item of response.data.opportunities) {
+    assert.equal(item.type, "Global opportunities");
+    assert.ok(
+      item.eligibility &&
+        item.application &&
+        item.availability &&
+        item.reviewed,
+    );
+    assert.equal(new URL(item.url).protocol, "https:");
+    assert.equal(item.email, undefined);
+    ids.add(item.id);
+  }
+  assert.equal(ids.size, 5);
+  const founder = await request(
+    "/auth/login",
+    "POST",
+    account("founder@example.com"),
+  );
+  assert.equal(founder.status, 200);
+  const saved = await request("/saved/shetrades", "PUT", {}, founder.cookie);
+  assert.equal(saved.status, 200);
+  const library = await request("/resources", "GET", undefined, founder.cookie);
+  assert.ok(library.data.saved.includes("shetrades"));
+  assert.equal(library.data.resources.filter((r) => ids.has(r.id)).length, 5);
 });
