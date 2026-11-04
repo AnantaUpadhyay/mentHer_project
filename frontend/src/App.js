@@ -13,6 +13,7 @@ import Workspace from "./pages/Workspace";
 import "./styles/index.css";
 import "./styles/finish.css";
 import "./styles/theme.css";
+import "./styles/light.css";
 function Protected({ children }) {
   const { loading, user } = useContext(AuthContext);
   return loading ? (

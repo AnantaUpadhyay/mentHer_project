@@ -8,7 +8,14 @@ import React, {
 } from "react";
 import { useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { Brand, Icon, Avatar, Empty, Notice } from "../components/UI";
+import {
+  Brand,
+  ThemeToggle,
+  Icon,
+  Avatar,
+  Empty,
+  Notice,
+} from "../components/UI";
 import api from "../services/api";
 const industries = [
   "Technology",
@@ -618,6 +625,7 @@ export default function Workspace() {
               / {nav.find((n) => n[0] === tab)?.[2] || "Overview"}
             </span>
           </span>
+          <ThemeToggle />
           <span className="top-date">
             {new Date().toLocaleDateString([], {
               weekday: "short",

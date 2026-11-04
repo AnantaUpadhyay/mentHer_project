@@ -311,7 +311,7 @@ select:focus-visible {
 .search-field,
 .message-compose textarea {
   background: #1b2122;
-  border-color: #4b5352;
+  border-color: #78827e;
   color: #f1e7e6;
 }
 .field input:hover,
@@ -327,7 +327,7 @@ select:focus-visible {
 }
 .password-field {
   background: #1b2122;
-  border-color: #4b5352;
+  border-color: #78827e;
 }
 .password-field input {
   background: transparent;

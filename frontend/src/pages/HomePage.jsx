@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { Brand, Icon } from "../components/UI";
+import { Brand, Icon, ThemeToggle } from "../components/UI";
 import Schemes from "../components/Schemes";
 export default function HomePage() {
   const { user } = useContext(AuthContext);
@@ -33,6 +33,7 @@ export default function HomePage() {
           <a href="#questions">Good to know</a>
         </nav>
         <div className="header-actions">
+          <ThemeToggle />
           {!user && (
             <Link className="text-link" to="/login">
               Log in

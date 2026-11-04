@@ -334,7 +334,7 @@ em {
 .auth-story {
   background: #e7e3d9;
 }
-.auth-story h1 em {
+.auth-story h2 em {
   color: #6d7359;
 }
 .auth-form > p {
@@ -1009,7 +1009,7 @@ em {
   .auth-story {
     padding: 30px;
   }
-  .auth-story h1 {
+  .auth-story h2 {
     font-size: 52px;
   }
   .auth-form-section {
@@ -1360,7 +1360,7 @@ em {
   .auth-form-section {
     padding: 38px 24px 50px;
   }
-  .auth-form h2 {
+  .auth-form h1 {
     font-size: 42px;
   }
   .auth-form > p {

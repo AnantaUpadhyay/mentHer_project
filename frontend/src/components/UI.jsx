@@ -1,3 +1,4 @@
+import { useTheme } from "../context/ThemeContext";
 import React from "react";
 import { Link } from "react-router-dom";
 export function Icon({ name = "arrow", size = 20, ...props }) {
@@ -18,6 +19,7 @@ export function Icon({ name = "arrow", size = 20, ...props }) {
     close: "m6 6 12 12M6 18 18 6",
     leaf: "M5 19C-2 6 13 2 21 3c1 9-3 20-16 16ZM5 19 16 8",
     menu: "M4 6h16M4 12h16M4 18h16",
+    moon: "M21 13a9 9 0 0 1-10-10A9 9 0 1 0 21 13Z",
     sun: "M12 2v2M12 20v2M2 12h2M20 12h2m-15-7 1 1m12-1-1 1M5 19l1-1m13 1-1-1M17 12a5 5 0 1 1-10 0 5 5 0 0 1 10 0",
   };
   return (
@@ -91,4 +93,19 @@ export function Notice({ error, children }) {
       {children}
     </div>
   ) : null;
+}
+
+export function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <button
+      type="button"
+      className="icon-button theme-toggle"
+      onClick={toggleTheme}
+      aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+      title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+    >
+      <Icon name={theme === "dark" ? "sun" : "moon"} />
+    </button>
+  );
 }

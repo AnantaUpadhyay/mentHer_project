@@ -836,12 +836,12 @@ textarea::placeholder {
   padding: 80px 0;
   position: relative;
 }
-.auth-story h1 {
+.auth-story h2 {
   font-size: clamp(55px, 5vw, 80px);
   line-height: 1.06;
   margin: 23px 0;
 }
-.auth-story h1 em {
+.auth-story h2 em {
   color: #79756f;
 }
 .auth-story p {
@@ -869,7 +869,7 @@ textarea::placeholder {
   width: 100%;
   max-width: 420px;
 }
-.auth-form h2 {
+.auth-form h1 {
   font-size: 42px;
   margin: 12px 0;
 }
@@ -2082,13 +2082,13 @@ textarea::placeholder {
   .auth-story {
     padding: 30px;
   }
-  .auth-story h1 {
+  .auth-story h2 {
     font-size: 48px;
   }
   .auth-form-section {
     padding: 40px 25px;
   }
-  .auth-form h2 {
+  .auth-form h1 {
     font-size: 34px;
   }
   .sidebar {
@@ -2482,7 +2482,7 @@ textarea::placeholder {
     padding: 40px 24px 55px;
     align-items: start;
   }
-  .auth-form h2 {
+  .auth-form h1 {
     font-size: 38px;
   }
   .auth-form .eyebrow {

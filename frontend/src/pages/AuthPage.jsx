@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { Brand, Icon, Notice } from "../components/UI";
+import { Brand, Icon, Notice, ThemeToggle } from "../components/UI";
 import api from "../services/api";
 export default function AuthPage({ signup = false }) {
   const { user, login } = useContext(AuthContext),
@@ -42,16 +42,19 @@ export default function AuthPage({ signup = false }) {
   return (
     <main className="auth-layout">
       <section className="auth-story">
-        <Brand />
+        <div className="auth-brand-row">
+          <Brand />
+          <ThemeToggle />
+        </div>
         <div>
           <span className="eyebrow">A SPACE FOR YOUR NEXT CHAPTER</span>
-          <h1>
+          <h2>
             Good things
             <br />
             grow with
             <br />
             <em>good company.</em>
-          </h1>
+          </h2>
           <p>
             Guidance for your business.
             <br />
@@ -68,7 +71,7 @@ export default function AuthPage({ signup = false }) {
           <span className="eyebrow">
             {signup ? "LET’S MAKE A BEGINNING" : "YOUR NEXT CHAPTER CONTINUES"}
           </span>
-          <h2>{signup ? "A place to grow." : "Welcome back."}</h2>
+          <h1>{signup ? "A place to grow." : "Welcome back."}</h1>
           <p>
             {signup
               ? "Create your account and find your people."
