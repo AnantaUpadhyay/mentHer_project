@@ -44,3 +44,9 @@ This is a working local MVP, not a launch-ready public service. Before public de
 No admin credentials, verification badges, scheduling, video calls, payments, public community feed or AI matching are included. Industry prioritisation is explicit, with no hidden match score. Funding resources link to providers; eligibility and application windows must be checked there.
 
 See [design and product audit](docs/PRODUCT_AUDIT.md) for findings, decisions and next steps.
+
+## Vercel public preview
+
+`vercel.json` deploys the React build and a public API for government schemes. The production build sets `REACT_APP_PUBLIC_PREVIEW=true`, which hides account forms and explains that member access is coming soon. The public API explicitly rejects account writes. Local development retains the complete SQLite-backed mentorship app.
+
+Before enabling hosted member access, connect persistent hosted database storage and deploy the full authenticated backend. Vercel Functions do not use the local SQLite database. The public preview does not upload local accounts or messages.

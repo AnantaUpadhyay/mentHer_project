@@ -140,3 +140,5 @@ vite.config.ts.timestamp-*
 
 # Local development database
 backend/data/
+
+.vercel/

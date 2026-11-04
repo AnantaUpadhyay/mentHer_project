@@ -38,6 +38,7 @@ export default function AuthPage({ signup = false }) {
       setBusy(false);
     }
   }
+  const publicPreview = process.env.REACT_APP_PUBLIC_PREVIEW === "true";
   return (
     <main className="auth-layout">
       <section className="auth-story">
@@ -74,100 +75,108 @@ export default function AuthPage({ signup = false }) {
               : "A little closer to what comes next."}
           </p>
           <Notice error>{error}</Notice>
-          <form onSubmit={submit}>
-            {signup && (
-              <>
-                <fieldset className="role-picker">
-                  <legend>I’m here to…</legend>
-                  {[
-                    [
-                      "entrepreneur",
-                      "Build my business",
-                      "Find guidance & support",
-                    ],
-                    [
-                      "mentor",
-                      "Share my experience",
-                      "Guide someone’s journey",
-                    ],
-                  ].map(([role, title, desc]) => (
-                    <label
-                      key={role}
-                      className={form.role === role ? "selected" : ""}
-                    >
-                      <input
-                        type="radio"
-                        name="role"
-                        value={role}
-                        checked={form.role === role}
-                        onChange={change}
-                      />
-                      <strong>{title}</strong>
-                      <small>{desc}</small>
-                    </label>
-                  ))}
-                </fieldset>
-                <label className="field">
-                  Your name
-                  <input
-                    name="name"
-                    autoComplete="name"
-                    maxLength={80}
-                    required
-                    value={form.name}
-                    onChange={change}
-                    placeholder="Your full name"
-                  />
-                </label>
-              </>
-            )}
-            <label className="field">
-              Email address
-              <input
-                name="email"
-                type="email"
-                autoComplete="email"
-                maxLength={254}
-                required
-                value={form.email}
-                onChange={change}
-                placeholder="you@example.com"
-              />
-            </label>
-            <label className="field">
-              Password
-              <span className="password-field">
+          {publicPreview && (
+            <Notice>
+              Member access is coming soon. Explore our government schemes while
+              we prepare the full workspace.
+            </Notice>
+          )}
+          {!publicPreview && (
+            <form onSubmit={submit}>
+              {signup && (
+                <>
+                  <fieldset className="role-picker">
+                    <legend>I’m here to…</legend>
+                    {[
+                      [
+                        "entrepreneur",
+                        "Build my business",
+                        "Find guidance & support",
+                      ],
+                      [
+                        "mentor",
+                        "Share my experience",
+                        "Guide someone’s journey",
+                      ],
+                    ].map(([role, title, desc]) => (
+                      <label
+                        key={role}
+                        className={form.role === role ? "selected" : ""}
+                      >
+                        <input
+                          type="radio"
+                          name="role"
+                          value={role}
+                          checked={form.role === role}
+                          onChange={change}
+                        />
+                        <strong>{title}</strong>
+                        <small>{desc}</small>
+                      </label>
+                    ))}
+                  </fieldset>
+                  <label className="field">
+                    Your name
+                    <input
+                      name="name"
+                      autoComplete="name"
+                      maxLength={80}
+                      required
+                      value={form.name}
+                      onChange={change}
+                      placeholder="Your full name"
+                    />
+                  </label>
+                </>
+              )}
+              <label className="field">
+                Email address
                 <input
-                  name="password"
-                  type={show ? "text" : "password"}
-                  autoComplete={signup ? "new-password" : "current-password"}
-                  minLength={8}
-                  maxLength={128}
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  maxLength={254}
                   required
-                  value={form.password}
+                  value={form.email}
                   onChange={change}
-                  placeholder={
-                    signup ? "At least 8 characters" : "Your password"
-                  }
+                  placeholder="you@example.com"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShow(!show)}
-                  aria-label={show ? "Hide password" : "Show password"}
-                >
-                  {show ? "Hide" : "Show"}
-                </button>
-              </span>
-            </label>
-            <button className="btn full" disabled={busy}>
-              {busy
-                ? "One moment…"
-                : signup
-                  ? "Create your account"
-                  : "Come on in"}
-              <Icon />
-            </button>
-          </form>
+              </label>
+              <label className="field">
+                Password
+                <span className="password-field">
+                  <input
+                    name="password"
+                    type={show ? "text" : "password"}
+                    autoComplete={signup ? "new-password" : "current-password"}
+                    minLength={8}
+                    maxLength={128}
+                    required
+                    value={form.password}
+                    onChange={change}
+                    placeholder={
+                      signup ? "At least 8 characters" : "Your password"
+                    }
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShow(!show)}
+                    aria-label={show ? "Hide password" : "Show password"}
+                  >
+                    {show ? "Hide" : "Show"}
+                  </button>
+                </span>
+              </label>
+              <button className="btn full" disabled={busy}>
+                {busy
+                  ? "One moment…"
+                  : signup
+                    ? "Create your account"
+                    : "Come on in"}
+                <Icon />
+              </button>
+            </form>
+          )}
           <p className="auth-switch">
             {signup ? "Already part of mentHer?" : "New around here?"}{" "}
             <Link to={signup ? "/login" : "/signup"}>

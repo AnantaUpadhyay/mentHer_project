@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm ci --prefix frontend",
+  "buildCommand": "REACT_APP_PUBLIC_PREVIEW=true npm run build",
+  "outputDirectory": "frontend/build",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api?route=:path*"
+    },
+    {
+      "source": "/((?!api(?:/|$)).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
