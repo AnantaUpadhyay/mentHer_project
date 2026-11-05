@@ -1009,6 +1009,7 @@ export default function Workspace() {
                         "Government support",
                         "Women’s schemes",
                         "Global opportunities",
+                        "Women in tech",
                         "Learning",
                         "Saved",
                       ].map((t) => (

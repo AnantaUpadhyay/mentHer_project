@@ -272,3 +272,43 @@ test("global opportunities are public, distinct from schemes and bookmarkable", 
   assert.ok(library.data.saved.includes("shetrades"));
   assert.equal(library.data.resources.filter((r) => ids.has(r.id)).length, 5);
 });
+
+test("women in tech initiatives are public, separate and bookmarkable", async () => {
+  const response = await request("/tech-initiatives");
+  assert.equal(response.status, 200);
+  assert.equal(response.data.initiatives.length, 5);
+  for (const item of response.data.initiatives) {
+    assert.equal(item.type, "Women in tech");
+    assert.ok(
+      item.eligibility &&
+        item.application &&
+        item.availability &&
+        item.reviewed,
+    );
+    assert.equal(new URL(item.url).protocol, "https:");
+  }
+  assert.match(
+    response.data.initiatives.find((r) => r.id === "outreachy").availability,
+    /closed/i,
+  );
+  const founder = await request(
+    "/auth/login",
+    "POST",
+    account("founder@example.com"),
+  );
+  assert.equal(
+    (await request("/saved/women-techmakers", "PUT", {}, founder.cookie))
+      .status,
+    200,
+  );
+  const library = await request("/resources", "GET", undefined, founder.cookie);
+  assert.ok(library.data.saved.includes("women-techmakers"));
+  assert.equal(
+    library.data.resources.filter((r) => r.type === "Women in tech").length,
+    5,
+  );
+  const global = await request("/opportunities");
+  assert.ok(
+    global.data.opportunities.every((r) => r.type === "Global opportunities"),
+  );
+});

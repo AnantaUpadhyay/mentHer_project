@@ -173,4 +173,94 @@ export const resources = [
       "Applications for the 2027 edition are closed. No next-round deadline is listed here.",
     reviewed: "5 November 2026",
   },
+  {
+    id: "women-techmakers",
+    title: "Women Techmakers — find your tech community",
+    org: "Technovation · Women Techmakers",
+    description:
+      "A global network of engineers, founders, researchers and technical leaders, with community events and professional development.",
+    url: "https://www.technovation.org/women-techmakers",
+    tag: "Global community · Technical leadership",
+    audience: "Women in tech · Across career stages",
+    eligibility:
+      "Explore membership and local or online communities. Ambassador roles are a separate application route with their own selection requirements.",
+    application:
+      "Use the official membership link to find your community and browse events. Check the separate ambassador page if you want to lead a community.",
+    availability:
+      "Membership registration is offered. Ambassador applications were closed when reviewed; check the provider for the next round.",
+    type: "Women in tech",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "anitab-membership",
+    title: "AnitaB.org — grow your career in tech",
+    org: "AnitaB.org",
+    description:
+      "A global technology community offering career resources, local connections, professional development and membership-based mentoring.",
+    url: "https://www.anitab.org/membership",
+    tag: "Global network · Career development",
+    audience: "Women in tech · Students and professionals",
+    eligibility:
+      "People at different career stages can explore membership. Benefits depend on the chosen tier; academic membership has its own requirements.",
+    application:
+      "Compare the official membership tiers before joining. Check mentoring access and event terms for your tier rather than assuming every benefit is free.",
+    availability:
+      "Essential membership is free. Premium tiers are paid; mentee access and some events require a qualifying paid tier.",
+    type: "Women in tech",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "outreachy",
+    title: "Outreachy — a first step into open source",
+    org: "Outreachy",
+    description:
+      "Paid, remote open-source internships with mentoring for people who face underrepresentation or systemic bias in technology.",
+    url: "https://www.outreachy.org/apply/eligibility/",
+    tag: "Remote · Paid open-source internships",
+    audience: "Women welcome · Other underrepresented applicants eligible",
+    eligibility:
+      "Applicants must be 18 or older and meet work, study, previous-internship and country rules. Internships require 30 hours per week. Students in India are considered for the May–August cohort under the published student rules.",
+    application:
+      "Read the eligibility guide, then follow the initial application, contribution and final application stages for an announced round.",
+    availability:
+      "Applications were closed when reviewed. Monitor the official site for the next intake; selection is competitive.",
+    type: "Women in tech",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "girls-who-code",
+    title: "Girls Who Code — learn, build and belong",
+    org: "Girls Who Code",
+    description:
+      "Coding clubs, virtual learning and college-to-career programmes that help girls and young women build technical skills and confidence.",
+    url: "https://girlswhocode.com/programs",
+    tag: "Coding skills · Students & early career",
+    audience: "School and college learners · Programme rules apply",
+    eligibility:
+      "Programmes target different stages: school clubs, high-school learning, and college or early-career support. Age, location, school and participation requirements vary by programme.",
+    application:
+      "Choose the programme that matches your stage, then check its current eligibility and location requirements before signing up.",
+    availability:
+      "The listed learning programmes are free. Enrollment windows and local availability vary; online delivery does not mean every programme is open worldwide.",
+    type: "Women in tech",
+    reviewed: "5 November 2026",
+  },
+  {
+    id: "rewriting-the-code",
+    title: "Rewriting the Code — from university to career",
+    org: "Rewriting the Code",
+    description:
+      "A community centred on women in technology, with peer support, mentoring, career events and connections to employers.",
+    url: "https://rewritingthecode.org/join-us/",
+    tag: "Peer support · University & early career",
+    audience: "Centred on women in tech · Membership open to all",
+    eligibility:
+      "Designed for university learners through the first six years of a tech career. More experienced professionals can explore mentor or speaker roles. Individual events and employer opportunities may have regional requirements.",
+    application:
+      "Join through the official community page, complete your profile and follow the account verification and community onboarding steps.",
+    availability:
+      "Community membership is free. Jobs, mentoring matches and event places are not guaranteed.",
+    type: "Women in tech",
+    reviewed: "5 November 2026",
+  },
 ];

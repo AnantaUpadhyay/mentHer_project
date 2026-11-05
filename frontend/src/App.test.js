@@ -84,13 +84,15 @@ beforeEach(() => {
       data:
         path === "/schemes"
           ? { schemes: [] }
-          : path === "/opportunities"
-            ? { opportunities: [] }
-            : path === "/mentors"
-              ? { mentors: [] }
-              : path === "/requests"
-                ? { requests: [] }
-                : { resources: [], saved: [] },
+          : path === "/tech-initiatives"
+            ? { initiatives: [] }
+            : path === "/opportunities"
+              ? { opportunities: [] }
+              : path === "/mentors"
+                ? { mentors: [] }
+                : path === "/requests"
+                  ? { requests: [] }
+                  : { resources: [], saved: [] },
     }),
   );
   window.matchMedia = jest.fn(() => ({
@@ -145,7 +147,9 @@ test("global opportunities show availability and keep the India schemes separate
                 },
               ],
             }
-          : { schemes: [] },
+          : path === "/tech-initiatives"
+            ? { initiatives: [] }
+            : { schemes: [] },
     }),
   );
   renderWithContext(<HomePage />);
@@ -164,4 +168,45 @@ test("global opportunities show availability and keep the India schemes separate
   expect(
     screen.getByRole("link", { name: "Global opportunities" }),
   ).toHaveAttribute("href", "#opportunities");
+});
+
+test("tech initiatives render in their own public section with an official link", async () => {
+  api.get.mockImplementation((path) =>
+    Promise.resolve({
+      data:
+        path === "/tech-initiatives"
+          ? {
+              initiatives: [
+                {
+                  id: "outreachy",
+                  title: "Outreachy",
+                  org: "Outreachy",
+                  description: "Open-source internships",
+                  url: "https://www.outreachy.org/apply/eligibility/",
+                  audience: "Women welcome",
+                  eligibility: "Check student rules",
+                  application: "Read the guide",
+                  availability: "Applications are closed.",
+                  reviewed: "5 November 2026",
+                },
+              ],
+            }
+          : path === "/opportunities"
+            ? { opportunities: [] }
+            : { schemes: [] },
+    }),
+  );
+  renderWithContext(<HomePage />);
+  expect(
+    await screen.findByRole("heading", { name: "Outreachy", exact: true }),
+  ).toBeVisible();
+  const section = document.querySelector("#women-in-tech");
+  expect(section).toHaveTextContent("Applications are closed.");
+  expect(section.querySelector("a")).toHaveAttribute(
+    "href",
+    "https://www.outreachy.org/apply/eligibility/",
+  );
+  expect(document.querySelector("#opportunities")).not.toHaveTextContent(
+    "Outreachy",
+  );
 });

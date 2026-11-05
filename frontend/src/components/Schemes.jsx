@@ -26,8 +26,46 @@ export function SchemeFacts({ resource }) {
     </div>
   );
 }
-export default function Schemes({ international = false }) {
-  const endpoint = international ? "/opportunities" : "/schemes";
+const sections = {
+  schemes: {
+    endpoint: "/schemes",
+    key: "schemes",
+    eyebrow: "SUPPORT FOR YOUR BUSINESS",
+    title: "Explore the support",
+    emphasis: "you could qualify for.",
+    description:
+      "Government programmes for women entrepreneurs in India, with official sources to help you take the next step.",
+    disclaimer:
+      "These summaries are a starting point, not an eligibility decision. Loans require repayment and lender approval. Application windows, training places and terms depend on the provider.",
+    saveLabel: "schemes",
+  },
+  opportunities: {
+    endpoint: "/opportunities",
+    key: "opportunities",
+    eyebrow: "POSSIBILITIES BEYOND BORDERS",
+    title: "Your next step,",
+    emphasis: "a wider world.",
+    description:
+      "Learning, mentoring, trade networks and awards for women building businesses around the world. Check each programme’s country rules and application status.",
+    disclaimer:
+      "An international directory, not a list of guaranteed places or open calls. Availability is shown as last reviewed; confirm eligibility, costs and deadlines with each provider.",
+    saveLabel: "opportunities",
+  },
+  "women-in-tech": {
+    endpoint: "/tech-initiatives",
+    key: "initiatives",
+    eyebrow: "A PLACE FOR YOU IN TECH",
+    title: "Build your skills.",
+    emphasis: "Find your people.",
+    description:
+      "Communities, coding programmes, mentoring and open-source internships for women taking their next step in technology.",
+    disclaimer:
+      "Each initiative has its own age, location and participation rules. Check current availability and costs with the provider; membership does not guarantee an internship, job or mentoring match.",
+    saveLabel: "tech initiatives",
+  },
+};
+export default function Schemes({ section = "schemes" }) {
+  const content = sections[section];
   const [schemes, setSchemes] = useState([]),
     [error, setError] = useState(""),
     [loading, setLoading] = useState(true);
@@ -35,41 +73,26 @@ export default function Schemes({ international = false }) {
     setLoading(true);
     setError("");
     api
-      .get(endpoint)
-      .then(({ data }) =>
-        setSchemes(data[international ? "opportunities" : "schemes"]),
-      )
+      .get(content.endpoint)
+      .then(({ data }) => setSchemes(data[content.key]))
       .catch(() => setError("Resources could not be loaded. Please try again."))
       .finally(() => setLoading(false));
-  }, [endpoint, international]);
+  }, [content]);
   useEffect(() => {
     load();
   }, [load]);
   return (
-    <section
-      className="section schemes-section"
-      id={international ? "opportunities" : "schemes"}
-    >
+    <section className="section schemes-section" id={section}>
       <div className="section-heading">
         <div>
-          <span className="eyebrow">
-            {international
-              ? "POSSIBILITIES BEYOND BORDERS"
-              : "SUPPORT FOR YOUR BUSINESS"}
-          </span>
+          <span className="eyebrow">{content.eyebrow}</span>
           <h2>
-            {international ? "Your next step," : "Explore the support"}
+            {content.title}
             <br />
-            <em>
-              {international ? "a wider world." : "you could qualify for."}
-            </em>
+            <em>{content.emphasis}</em>
           </h2>
         </div>
-        <p>
-          {international
-            ? "Learning, mentoring, trade networks and awards for women building businesses around the world. Check each programme’s country rules and application status."
-            : "Government programmes for women entrepreneurs in India, with official sources to help you take the next step."}
-        </p>
+        <p>{content.description}</p>
       </div>
       <Notice error>{error}</Notice>
       {error && (
@@ -94,14 +117,9 @@ export default function Schemes({ international = false }) {
           ))}
         </div>
       )}
-      <p className="resource-disclaimer">
-        {international
-          ? "An international directory, not a list of guaranteed places or open calls. Availability is shown as last reviewed; confirm eligibility, costs and deadlines with each provider."
-          : "These summaries are a starting point, not an eligibility decision. Loans require repayment and lender approval. Application windows, training places and terms depend on the provider."}
-      </p>
+      <p className="resource-disclaimer">{content.disclaimer}</p>
       <Link className="quiet-link" to="/signup">
-        Create an account to save useful{" "}
-        {international ? "opportunities" : "schemes"} <Icon size={17} />
+        Create an account to save useful {content.saveLabel} <Icon size={17} />
       </Link>
     </section>
   );

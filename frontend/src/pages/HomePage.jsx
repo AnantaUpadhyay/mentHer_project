@@ -31,6 +31,7 @@ export default function HomePage() {
           <a href="#approach">Our approach</a>
           <a href="#schemes">Government schemes</a>
           <a href="#opportunities">Global opportunities</a>
+          <a href="#women-in-tech">Women in tech</a>
           <a href="#questions">Good to know</a>
         </nav>
         <div className="header-actions">
@@ -259,7 +260,8 @@ export default function HomePage() {
           </div>
         </section>
         <Schemes />
-        <Schemes international />
+        <Schemes section="opportunities" />
+        <Schemes section="women-in-tech" />
         <section className="section journey">
           <div>
             <span className="eyebrow">FROM “WHAT IF” TO “WHAT’S NEXT”</span>

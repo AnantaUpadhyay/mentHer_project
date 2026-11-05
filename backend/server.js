@@ -108,6 +108,10 @@ export async function handler(req, res) {
           (r) => r.type === "Global opportunities",
         ),
       });
+    if (path === "/tech-initiatives" && method === "GET")
+      return send(200, {
+        initiatives: resources.filter((r) => r.type === "Women in tech"),
+      });
     if (path === "/health")
       return send(200, {
         ok: true,
